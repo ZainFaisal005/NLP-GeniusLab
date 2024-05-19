@@ -8,34 +8,27 @@ import emoji
 
 class TextPreprocessing:
     def __init__(self,text='No Text Provided'):
-        self.lowercasing(text)
-        self.remove_html_tags(text)
-        self.remove_urls(text)
-        self.remove_punctuation(text)
-        self.expand_chat_words(text)
-        self.correct_spelling(text)
-        self.remove_stop_words(text)
-        self.replace_emojis_with_meanings(text)
+        self.text = text
     
-    def lowercasing(self,text):
-        return text.lower()
+    def lowercasing(self):
+        return self.text.lower()
     
-    def remove_html_tags(self,text):
-        clean_text = re.sub('<.*?>', '', text)
+    def remove_html_tags(self):
+        clean_text = re.sub('<.*?>', '', self.text)
         return clean_text
     
-    def remove_urls(self,text):
+    def remove_urls(self):
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
-        clean_text = re.sub(url_pattern, '', text)
+        clean_text = re.sub(url_pattern, '', self.text)
         return clean_text
     
-    def remove_punctuation(self,text):
+    def remove_punctuation(self):
         punctuation = string.punctuation
-        clean_text = text.translate(str.maketrans('', '', punctuation))
+        clean_text = self.text.translate(str.maketrans('', '', punctuation))
         return clean_text
     
 
-    def expand_chat_words(self,text):
+    def expand_chat_words(self):
         chat_words_mapping = {
         "lol": "laughing out loud",
         "brb": "be right back",
@@ -76,27 +69,27 @@ class TextPreprocessing:
         "omw": "on my way",
         "omw2syg": "on my way to see your girlfriend",
         }
-        words = text.split()
+        words = self.text.split()
         expanded_words = [chat_words_mapping.get(word.lower(), word) for word in words]
         return ' '.join(expanded_words)
     
-    def correct_spelling(self,text):
+    def correct_spelling(self):
         spell = SpellChecker()
         corrected_words = []
-        for word in text.split():
+        for word in self.text.split():
             corrected_word = spell.correction(word)
             corrected_words.append(corrected_word if corrected_word is not None else word)
         corrected_text = ' '.join(corrected_words)
         return corrected_text
     
-    def remove_stop_words(self,text):
-        tokens = nltk.word_tokenize(text)
+    def remove_stop_words(self):
+        tokens = nltk.word_tokenize(self.text)
         stop_words = set(stopwords.words('english'))
         filtered_tokens = [token for token in tokens if token not in stop_words]
         preprocessed_text = ' '.join(filtered_tokens)
         return preprocessed_text
     
-    def remove_emojis(self,text):
+    def remove_emojis(self):
         emoji_pattern = re.compile("["
                                 u"\U0001F600-\U0001F64F"
                                 u"\U0001F300-\U0001F5FF"
@@ -117,11 +110,11 @@ class TextPreprocessing:
                                 u"\ufe0f"
                                 u"\u3030"
                                 "]+", flags=re.UNICODE)
-        cleaned_text = emoji_pattern.sub(r'', text)
+        cleaned_text = emoji_pattern.sub(r'', self.text)
         return cleaned_text
     
 
-    def replace_emojis_with_meanings(self,text):
+    def replace_emojis_with_meanings(self):
         def replace(match):
             emoji_char = match.group()
             emoji_meaning = emoji.demojize(emoji_char)
@@ -147,5 +140,5 @@ class TextPreprocessing:
                                 u"\ufe0f"
                                 u"\u3030"
                                 "]+", flags=re.UNICODE)
-        text_with_meanings = emoji_pattern.sub(replace, text)
+        text_with_meanings = emoji_pattern.sub(replace, self.text)
         return text_with_meanings
